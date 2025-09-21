@@ -1,0 +1,87 @@
+{% extends 'ovinet/base.html' %}
+
+{% block title %}Device Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card bg-dark text-white shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">Device Details</h2>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">MAC Address: {{ device.mac_address }}</h4>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Basic Information</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>IP Address:</strong> {{ device.ip_address }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>Hostname:</strong> {{ device.hostname }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>Type:</strong> {{ device.type|title }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>Status:</strong> 
+                            {% if device.active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                
+                {% if device.wireless_info %}
+                <div class="col-md-6">
+                    <h5>Wireless Information</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>Interface:</strong> {{ device.wireless_info.interface }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>Uptime:</strong> {{ device.wireless_info.uptime }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>Signal Strength:</strong> {{ device.wireless_info.signal_strength }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>TX Rate:</strong> {{ device.wireless_info.tx_rate }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>RX Rate:</strong> {{ device.wireless_info.rx_rate }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>SSID:</strong> {{ device.wireless_info.ssid }}
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if device.interface %}
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h5>Network Information</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>Interface:</strong> {{ device.interface }}
+                        </li>
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>ARP Status:</strong> {{ device.arp_status }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="mt-3">
+                <a href="{% url 'net:mikrotik_connected_devices' %}" class="btn btn-secondary">Back to Devices</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

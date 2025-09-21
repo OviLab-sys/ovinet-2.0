@@ -1,0 +1,43 @@
+{% extends 'ovinet/base.html' %}
+{% load math_extras %}
+
+{% block title %}Profile - Ovinet{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">User Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Account Information</h4>
+                            <p><strong>Username:</strong> {{ user.username }}</p>
+                            <p><strong>Phone Number:</strong> {{ user.username }}</p>
+                            <p><strong>Email:</strong> {{ user.email|default:"Not provided" }}</p>
+                            
+                            {% if active_session %}
+                            <h4 class="mt-4">Current Session</h4>
+                            <p><strong>Package:</strong> {{ active_session.package.name }}</p>
+                            <p><strong>Data Used:</strong> {{ active_session.data_used_mb|default:0 }} MB</p>
+                            <p><strong>Data Limit:</strong> {{ active_session.package.data_limit_mb }} MB</p>
+                            <p><strong>Data Remaining:</strong> {{ active_session.package.data_limit_mb|subtract:active_session.data_used_mb|default:active_session.package.data_limit_mb }} MB</p>
+                            <p><strong>Session Started:</strong> {{ active_session.start_time|date:"F d, Y H:i" }}</p>
+                            <p><strong>Package Duration:</strong> {{ active_session.package.duration_hours }} hours</p>
+                            <p><strong>Session Expiry:</strong> {{ active_session.start_time|add_hours_to_date:active_session.package.duration_hours|date:"F d, Y H:i" }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Account Actions</h4>
+                            <a href="{% url 'net:logout' %}" class="btn btn-danger">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

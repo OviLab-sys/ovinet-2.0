@@ -1,0 +1,28 @@
+{% extends 'ovinet/base.html' %}
+
+{% block title %}Vendor Registration - Ovinet{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Vendor Registration</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary btn-block">Register as Vendor</button>
+                    </form>
+                    <hr>
+                    <p class="text-center">
+                        Already have an account? <a href="{% url 'net:login' %}">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

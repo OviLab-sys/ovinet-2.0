@@ -1,0 +1,20 @@
+{% extends "ovinet/base.html" %}
+
+{% load static %}
+
+{% block title %}
+    {{package.name}}
+{% endblock title %}
+
+{% block content %}
+    <div class="package-detail">
+        <p>{{package.name}}</p>
+        <p class="price">ksh{{package.price}}</p>
+
+        <form action="{% url 'net:initiate_payment' %}" method= "post">
+            {% csrf_token %}
+            <input type="hidden" name="package_id" value="{{package}}">
+            <button type="submit" class="btn btn-primary">Purchase</button>
+        
+    </div>
+{% endblock content %}

@@ -1,0 +1,122 @@
+{% extends 'ovinet/base.html' %}
+
+{% block title %}Packages{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 id="pkg">Available Packages</h1>
+    {% for package in packages %}
+        <button 
+            class="package-btn {% cycle 'btn-purple' 'btn-yellow' 'btn-green' 'btn-blue' 'btn-orange' %}" 
+            onclick="buyPackage('{{ package.id }}', '{{ package.name }}', '{{ package.price }}')">
+            {{ package.name }} @{{ package.price }}/-
+        </button>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function buyPackage(packageId, packageName, packagePrice) {
+    // First, fetch the user's phone number from the server
+    $.ajax({
+        type: 'GET',
+        url: '{% url "net:get_user_phone" %}',
+        success: function(phoneResponse) {
+            if (phoneResponse.status === 'success') {
+                const phoneNumber = phoneResponse.phone_number;
+                
+                Swal.fire({
+                    title: 'Complete purchase',
+                    html: `
+                        <p>Do you wish to Purchase <b>${packageName} @${packagePrice}/-</b>?</p>
+                        <p>Payment will be initiated on your registered phone number: <b>${phoneNumber}</b></p>
+                        <p>You will receive an Mpesa prompt requesting a payment of Ksh.${packagePrice}.</p>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Pay Now',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Show loading message
+                        Swal.fire({
+                            title: 'Processing...',
+                            text: 'Please wait while we initiate the payment.',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        
+                        $.ajax({
+                            type: 'POST',
+                            url: '{% url "net:payment" %}',
+                            data: {
+                                package_id: packageId,
+                                phone_number: phoneNumber,
+                                csrfmiddlewaretoken: '{{ csrf_token }}'
+                            },
+                            success: function(data) {
+                                if (data.status === 'success') {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Payment Initiated',
+                                        text: data.message,
+                                        confirmButtonText: 'OK'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Payment Failed',
+                                        text: data.message,
+                                        confirmButtonText: 'Try Again'
+                                    });
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.log('AJAX Error:', xhr, status, error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Payment Failed',
+                                    text: 'Something went wrong. Please try again. Error: ' + error,
+                                    confirmButtonText: 'Try Again'
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not retrieve your phone number. Please login and try again.',
+                    confirmButtonText: 'Login'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '{% url "net:login" %}';
+                    }
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log('Phone number fetch error:', xhr, status, error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Please login first to purchase data packages.',
+                confirmButtonText: 'Login'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '{% url "net:login" %}';
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}
+</content>

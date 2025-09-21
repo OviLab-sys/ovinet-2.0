@@ -1,0 +1,38 @@
+{# filepath: /home/ovi/programming/django/p5/ovinet/templates/ovinet/net/profile.html #}
+{% extends 'ovinet/base.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card bg-dark text-white shadow-lg">
+        <div class="card-header">
+            <h2 class="mb-0">User Profile</h2>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">{{ user.username }}</h4>
+            <p><strong>Phone Number:</strong> {{ user.phone_number }}</p>
+            <hr>
+            <h5>Current Session Details</h5>
+            {% if session %}
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-dark text-white">
+                        <strong>Data Used:</strong> {{ session.data_used }} MB
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <strong>Data Balance:</strong> {{ session.data_balance }} MB
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <strong>Time Remaining:</strong> {{ session.time_remaining }}
+                    </li>
+                    <li class="list-group-item bg-dark text-white">
+                        <strong>Expiry Date:</strong> {{ session.expiry|date:"M d, Y H:i" }}
+                    </li>
+                </ul>
+            {% else %}
+                <p>No active session found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
