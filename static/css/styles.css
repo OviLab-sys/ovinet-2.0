@@ -1,0 +1,138 @@
+/* General body and layout */
+body {
+    background: url('/static/images/i.jpeg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    color: #a8a1a1;
+}
+
+/* Header */
+header {
+    background: rgba(50, 50, 50, 0.7);
+    color: #fff;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+-------
+
+/* Header buttons */
+header .btn-outline-light {
+    border-color: #fff;
+    color: #fff;
+    margin-left: 10px;
+}
+
+header .btn-outline-light:hover {
+    background-color: #fff;
+    color: #565656;
+}
+
+#pkg {
+  font-size: 35px;
+  font-weight: bold;
+  color: #242306;
+  text-align: center;
+  margin-top: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+
+/* Footer */
+footer {
+    margin-top: auto;
+    background: #434343b3;
+    color: #ddd;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* Main content wrapper */
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Package buttons */
+.package-btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    color: #fff;
+    font-size: 4px;
+    transition: transform 0.2s ease-in-out;
+}
+.package-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Button colors (cycle in Django template) */
+.btn-yellow { background-color: #565654; color: #000; }
+.btn-purple { background-color: #ff592b; }
+.btn-green  { background-color: #e116e8; }
+.btn-blue   { background-color: #f13131; }
+.btn-orange { background-color: #4df11b; }
+
+.package-btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 15px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #fffdf0; /* thin silver border */
+    color: #ffffff;
+    font-size: 16px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    background-clip: padding-box;
+    box-shadow: 0 0 5px rgba(192, 192, 192, 0.8); /* subtle silver glow */
+}
+
+.package-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(192, 192, 192, 1); /* stronger glow on hover */
+}
+.package-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 3px rgba(192, 192, 192, 0.5); /* subtle glow on click */
+}
+
+
+/* Button text */
+.package-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+/* Button background effect */
+.package-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100
+}
+
+#particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;       /* keep behind everything */
+    background: transparent;
+    pointer-events: auto; 
+}

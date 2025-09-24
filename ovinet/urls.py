@@ -20,7 +20,8 @@ from core import views
 
 urlpatterns = [
     path('admin/', admin_site.urls),
-    path('', include('core.urls')),
+    path('core-admin/', include('core.urls')),
+    path('', include('tenants.urls')),
 ]
 
 handler404 = 'core.views.handler404'

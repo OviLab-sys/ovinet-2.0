@@ -45,3 +45,9 @@ class SoftDeleteModel(models.Model):
     def restore(self):
         self.is_deleted = False
         self.save(update_fields=["is_deleted"])
+        
+    def hard_delete(self, using=None, keep_parents=False):
+        """
+        Optional: provide a true delete if you ever need to remove permanently.
+        """
+        super().delete(using=using, keep_parents=keep_parents)

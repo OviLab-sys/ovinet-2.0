@@ -2,7 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from django.urls import reverse
-from django_tenants.models import TenantModel
+from django_tenants.models import TenantMixin
 from core.models import BaseModel
 from core.constants import DurationStatus, SessionStatus
 from core.managers import SoftDeleteManager, AllObjectsManager
@@ -19,7 +19,7 @@ class SubscriptionStatus(models.TextChoices):
 # -----------------------------
 # Data Package Model
 # -----------------------------
-class DataPackage(BaseModel, TenantModel):
+class DataPackage(BaseModel, TenantMixin):
     """Data packages offered by the vendor (tenant-specific)"""
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
@@ -35,6 +35,7 @@ class DataPackage(BaseModel, TenantModel):
     )
     duration_days = models.PositiveIntegerField(
         validators=[MinValueValidator(1)],
+        default=1,  # Added default value
         help_text="Number of days the package is valid"
     )
     price = models.DecimalField(
@@ -85,7 +86,7 @@ class DataPackage(BaseModel, TenantModel):
 # -----------------------------
 # User Subscription Model
 # -----------------------------
-class UserSubscription(BaseModel, TenantModel):
+class UserSubscription(BaseModel, TenantMixin):
     """User subscriptions to data packages (tenant-specific)"""
     user = models.ForeignKey(
         'accounts.User',
@@ -209,7 +210,7 @@ class UserSubscription(BaseModel, TenantModel):
 # -----------------------------
 # Active Session Model
 # -----------------------------
-class ActiveSession(BaseModel, TenantModel):
+class ActiveSession(BaseModel, TenantMixin):
     """Active user sessions (tenant-specific)"""
     user = models.ForeignKey(
         'accounts.User',
@@ -261,6 +262,10 @@ class ActiveSession(BaseModel, TenantModel):
         blank=True,
         help_text="MikroTik session ID for tracking"
     )
+    max_duration_minutes = models.PositiveIntegerField(
+        default=1440,  # 24 hours
+        help_text="Maximum allowed session duration in minutes"
+    )
 
     # Managers
     objects = SoftDeleteManager()
@@ -275,6 +280,7 @@ class ActiveSession(BaseModel, TenantModel):
             models.Index(fields=['start_time']),
             models.Index(fields=['user', 'session_status']),
         ]
+        unique_together = ['user', 'subscription', 'session_status']  # Prevents duplicate active sessions
 
     def __str__(self):
         return f"Session {self.id} for {self.user.phone_number}"
@@ -319,7 +325,7 @@ class ActiveSession(BaseModel, TenantModel):
 # -----------------------------
 # Paused Session Model
 # -----------------------------
-class PausedSession(BaseModel, TenantModel):
+class PausedSession(BaseModel, TenantMixin):
     """Track session pause history (tenant-specific)"""
     PAUSE_REASON_CHOICES = (
         ('user_request', 'User Request'),
@@ -357,7 +363,7 @@ class PausedSession(BaseModel, TenantModel):
     )
     paused_by = models.ForeignKey(
         'accounts.User',
-        on_delete=models.SET_NULL,
+        on_delete=models.SET_NULL,  # Already good!
         null=True,
         blank=True,
         related_name='paused_sessions',
@@ -395,3 +401,12 @@ class PausedSession(BaseModel, TenantModel):
             self.save()
             # Also resume the main session
             self.session.resume_session()
+            
+class MpesaTransaction(BaseModel, TenantMixin):
+    merchant_request_id = models.CharField(max_length=100, unique=True)
+    checkout_request_id = models.CharField(max_length=100, unique=True)
+    response_code = models.CharField(max_length=10)
+    response_description = models.TextField()
+    customer_message = models.TextField()
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
